@@ -1,0 +1,14 @@
+{{>headerEstudiantes}}
+
+<div id= "formulario_registro">
+    <h1 id= "registro_est">Contactenos</h1><br>
+
+    <form action="/succesContact" method="POST">
+        <h4>Sus sugerencias u observaciones seran enviadas al correo de uno de nuestros desarrolladores</h4><br><br>
+        <h3>Asunto</h3><input type="text" name="asunto" required><br><br><br>
+        <h3>Descripcion</h3><textarea rows="5" cols="50" name="description" required></textarea><br><br>
+        <button>Enviar</button>
+    </form>
+</div>
+
+{{>footer}}

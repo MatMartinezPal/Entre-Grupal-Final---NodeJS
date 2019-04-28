@@ -1,0 +1,17 @@
+{{>headerEstudiantes}}
+
+<div id= "formulario_registro">
+        <h1 id= "registro_est">Sala de chat</h1><br>
+        <form class="chatForm" id="chatForm">
+            <div class="chatArea" id="chatArea"></div>
+            <input type ="hidden" id="nombreEst" value="{{est.nombre}}"/>
+            <input type="text" id="mensajeEnviar" required>
+            <button class="sendButton" id="buttonEnviar"><i class="far fa-paper-plane fa-lg" ></i></button>
+        </form>
+</div>
+
+<script src="socket.io/socket.io.js"></script>
+<script src="js/chat.js"></script>
+
+
+{{>footer}}
