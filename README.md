@@ -1,4 +1,4 @@
-# Entrega-Grupal-2---NodeJS
+# Entrega-Final---NodeJS
 
 Instrucciones de uso. (IMPORTANTE LEER)
 
@@ -12,6 +12,8 @@ Instrucciones de uso. (IMPORTANTE LEER)
 
 5)El usuario con rol Coordinador es ID:123456789 Contraseña:123 y el usuario con rol Docente es ID:987654321 Contraseña:123.
 
-6)Si se trabaja en forma local (No en heroku), se debe acceder a: Localhost:3000/index. De lo contrario si se trabaja en heroku, el link es: https://nodejs-entrega2.herokuapp.com/
+6)Si se trabaja en forma local (No en heroku), se debe acceder a: Localhost:3000/index. De lo contrario si se trabaja en heroku, el link es: https://nodejsultimaentrega.herokuapp.com/
 
 7)Por alguna razón, el servidor en el computador de uno de nuestros compañeros no respondía adecuadamente a la hora de inscribirse a uno de los cursos. Si tiene algun error con esto, simplemente reinicie el servidor una vez y deberia funcionar de manera correcta.
+
+8)Trate de no crear muchos usuarios para no saturar el diseño CSS
