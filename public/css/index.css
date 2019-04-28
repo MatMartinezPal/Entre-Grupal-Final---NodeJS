@@ -76,7 +76,7 @@ button {
   font-size: 16px;
 }
 
-#boton_inscripcion {
+.boton_inscripcion, .boton_cerrar {
   background-color: darkorange; 
   border: none;
   color: black bold;
@@ -222,6 +222,14 @@ td{
 .navegacion{
     width: 100%;
     display: inline-flex;
+}
+
+.photoActua{
+    border: 2px solid;    
+    border-radius: 4px;
+    width: 115px;
+    height: 115px; 
+    margin: 0 auto;
 }
 
 

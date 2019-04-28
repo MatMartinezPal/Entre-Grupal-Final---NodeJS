@@ -2,8 +2,12 @@
 
 <div id= "formulario_registro">
     <h1 id= "registro_est">Actualizar datos</h1><br>
-    <h2 id= "registro_est">Usuario -- {{nombre}}</h2><br><br>
-
+    <h2 id= "registro_est">Usuario -- {{nombre}}</h2><br>
+    {{#if avatar}}
+        <div class="photoActua">
+            <img src="data:img/jpeg;base64,{{avatar}}" width="115px" height="115px">
+        </div><br>
+    {{/if}}
     <form action="/actualizarAlumno" method="POST">
 
         <input type="hidden" name="cedula" value={{cedula}}>

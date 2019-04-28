@@ -8,7 +8,10 @@
         <header>
         </header>
 <div id= "formulario_registro">
-    <h1 id= "registro_est">ERROR</h1><br><br><br>
+    <h1 id="registro_est">ERROR</h1><br><br>
+    {{#if mensaje}}
+        <h2 id="registro_est">{{mensaje}}</h2><br><br><br>
+    {{/if}}
     <h2 id="registro_est">Para volver presione atras</h2>
 </div>
 

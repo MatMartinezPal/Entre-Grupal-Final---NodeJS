@@ -61,6 +61,7 @@ app.use(session({
 
 }))
 
+
 // Cuando ingrese a la pagina de error.
 app.get("/error",(req,res) =>{
     res.render("error");
@@ -89,7 +90,9 @@ app.get("/cursos",(req,res) =>{
         });      
     }
     else{
-        res.redirect("error");
+        res.render("error", {
+            mensaje: "Lo sentimos, usted no ha iniciado sesion."
+        });
     }
 });
 
@@ -119,7 +122,9 @@ app.get("/misCursos",(req,res) => {
         });
     }
     else{
-        res.redirect("error");
+        res.render("error",{
+            mensaje: "Lo sentimos, usted no ha iniciado sesion."
+        });
     }
 });
 
@@ -144,7 +149,9 @@ app.get("/eliminarRelacion",(req,res) => {
         });
     }
     else{
-        res.redirect("error");
+        res.render("error", {
+            mensaje: "Lo sentimos, usted no ha iniciado sesion."
+        });
     }
 });
 
@@ -323,14 +330,14 @@ app.get("/eliminarInscripcion" ,(req,res) => {
 
 app.get("/cerrarCurso", (req,res) => {
 
-    Curso.findOneAndUpdate({id:req.query.id},{$set:{estado: "cerrado"}},(err,respuesta) =>{
+    Curso.findOneAndUpdate({id:req.query.id},{$set:{estado: "cerrado"}},(err,respuestaCurso) =>{
         if (err){
             res.redirect("error");
         }
         Usuario.findOneAndUpdate({cedula: req.query.encargado}, {$push :{cursosaCargo: req.query.id}},(err,respuesta) =>{
             if (err){
                 res.redirect("error");
-            }    
+            }  
         });
         Curso.find({}).exec((err,resultado) => {
             if (err){
@@ -372,10 +379,17 @@ app.get("/cursosDocente",(req,res) =>{
 });
 
 app.get("/contactenos", (req,res) =>{
-    res.render("contactoEst" , {
+    Usuario.find({rol: "coordinador"}).exec((err,resultado) => {
+        if (err) {
+            res.redirect("error");
+        }
+        res.render("contactoEst" , {
             est: req.session.usuario,
-            avatar: req.session.foto
+            avatar: req.session.foto,
+            coordinadores: resultado
+        })
     })
+
 })
 
 app.get("/chat", (req,res) =>{
@@ -395,7 +409,9 @@ app.post("/cursos",upload.single("avatar"),(req,res) =>{
             res.redirect("error");
         }
         if (resultado != null){
-            res.redirect("error");
+            res.render("error", {
+                mensaje: "Alguien ya se registro con su ID."
+            });
         }
         else{
             req.session.usuario = {
@@ -420,6 +436,7 @@ app.post("/cursos",upload.single("avatar"),(req,res) =>{
             sgMail.send(msg);
 
             funciones_estudiantes.guardarAlumnoBd(req.session.usuario);
+            req.session.foto = req.session.usuario.avatar.toString('base64');
 
             Curso.find({estado : "disponible"}).exec((err,resultado) => { 
                 if (err) {
@@ -427,7 +444,7 @@ app.post("/cursos",upload.single("avatar"),(req,res) =>{
                 }
                 res.render("cursos",{
                     est: req.session.usuario,
-                    avatar: req.session.usuario.avatar.toString('base64'),
+                    avatar: req.session.foto,
                     cursos_disponibles : resultado
                 });
 
@@ -446,47 +463,54 @@ app.post("/login",(req,res)=>{
         }
         if(resultado != null){
             if(!bcrypt.compareSync(req.body.pass_log,String(resultado.contrasenia))){
-                res.redirect("error");          
+                res.render("error", {
+                    mensaje: "Contraseña incorrecta."
+                });          
             }
-        else{
-                req.session.usuario = resultado
+            else{
+                    req.session.usuario = resultado
 
-                if(resultado.rol == "coordinador"){
-                    res.render("crearCursosCoord", {
-                        est: req.session.usuario
-                    });
-                }
-                else if (resultado.rol == "aspirante"){
-                    Curso.find({estado : "disponible"}).exec((err,resi) => { 
-                        if (err) {
-                            res.redirect("error");
-                        }
-                        req.session.foto = resultado.avatar.toString('base64'),
-                        res.render("cursos",{
-                            est: resultado,
-                            avatar: req.session.foto,
-                            cursos_disponibles : resi
+                    if(resultado.rol == "coordinador"){
+                        res.render("crearCursosCoord", {
+                            est: req.session.usuario
                         });
-        
-                    });
-                }
-                else{
-                    Usuario.findOne({cedula : req.session.usuario.cedula}).exec((err, resultado) =>{
-                        if (err){
-                            res.redirect("error");
-                        }
-                        Curso.find({id : {$in : resultado.cursosaCargo}}).exec((err,respuesta) =>{
+                    }
+                    else if (resultado.rol == "aspirante"){
+                        Curso.find({estado : "disponible"}).exec((err,resi) => { 
+                            if (err) {
+                                res.redirect("error");
+                            }
+                            req.session.foto = resultado.avatar.toString('base64'),
+                            res.render("cursos",{
+                                est: resultado,
+                                avatar: req.session.foto,
+                                cursos_disponibles : resi
+                            });
+            
+                        });
+                    }
+                    else{
+                        Usuario.findOne({cedula : req.session.usuario.cedula}).exec((err, resultado) =>{
                             if (err){
                                 res.redirect("error");
-                            }   
-                            res.render("cursosDocente" , {
-                                est: req.session.usuario,
-                                cursos: respuesta
-                            });    
+                            }
+                            Curso.find({id : {$in : resultado.cursosaCargo}}).exec((err,respuesta) =>{
+                                if (err){
+                                    res.redirect("error");
+                                }   
+                                res.render("cursosDocente" , {
+                                    est: req.session.usuario,
+                                    cursos: respuesta
+                                });    
+                            });
                         });
-                    });
-                }   
-            }
+                    }   
+                }
+        }
+        else{
+            res.render("error", {
+                mensaje: "No se ha encontrado un usuario con su ID."
+            })
         }
 
     });
@@ -531,11 +555,30 @@ app.post("/modificarDatos" , (req,res) =>{
     let cedula = req.body.cedula;
     let nombre = req.body.nombre;
 
-    res.render("formActuaCoord", {
-        est: req.session.usuario,
-        cedula : cedula,
-        nombre : nombre
-    });
+    Usuario.findOne({cedula : req.body.cedula}).exec((err,respuesta) =>{
+        if (err){
+            res.redirect("error");
+        }
+        if (respuesta.rol == "aspirante"){
+            res.render("formActuaCoord", {
+                est: req.session.usuario,
+                avatar: respuesta.avatar.toString('base64'),
+                cedula : cedula,
+                nombre : nombre
+            });
+        }
+        else{
+            res.render("formActuaCoord", {
+                est: req.session.usuario,
+                avatar: null,
+                cedula : cedula,
+                nombre : nombre
+            });
+
+        }
+
+    })
+
 });
 
 
@@ -595,7 +638,7 @@ app.post("/verInscritos", (req,res) => {
 
 app.post("/succesContact", (req,res) => {
     let msg = {
-        to: "matmartinezpal@unal.edu.co",
+        to: req.body.coordinadorEncargado,
         from: req.session.usuario.correo,
         subject: req.body.asunto,
         html: req.body.description
@@ -616,7 +659,12 @@ io.on('connection', client =>{
     client.on("mensaje", (mensaje) =>{
         io.emit("mensaje", (mensaje))
     })
+    
+    client.on("cursoCerrado",(mensaje)=>{
+        io.emit("cursoCerrado",(mensaje))
+    })
 })
+
 
 // Conexion con la base de datos
 
