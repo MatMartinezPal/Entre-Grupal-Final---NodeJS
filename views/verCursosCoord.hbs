@@ -40,8 +40,7 @@
                     <td>
                         <form action="/cerrarCurso" method="GET">
                             <input type ="hidden" name="id" value="{{id}}"/>
-                            <input type ="hidden" name="nombreCurso" value="{{nombre}}"/>
-                            <button class="boton_cerrar">Cerrar</button><br><br>
+                            <button class="boton_cerrar" value="{{nombre}}">Cerrar</button><br><br>
                             <select name="encargado" class="selectors" required>
                             {{#each ../encargados}}
                                 <option value="{{cedula}}">{{nombre}}</option>

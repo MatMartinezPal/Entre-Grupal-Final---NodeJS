@@ -24,8 +24,7 @@ else if (page == "administrarCursos" || page == "cerrarCurso"){
     let botones_cerrar = document.getElementsByClassName("boton_cerrar")
     for (elementoActual of botones_cerrar){
         elementoActual.addEventListener("click", (e) =>{
-            let nombre_curso_cerrar = elementoActual.previousElementSibling.value
-            socket.emit("cursoCerrado", `Curso: ${nombre_curso_cerrar} -- CERRADO`)
+            socket.emit("cursoCerrado", `Curso: ${e.target.value} -- CERRADO`)
         })
     }
 }
